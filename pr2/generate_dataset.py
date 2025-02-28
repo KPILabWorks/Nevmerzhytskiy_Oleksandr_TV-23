@@ -1,39 +1,34 @@
 import pandas as pd
-import random
-import string
 import numpy as np
-from datetime import datetime, timedelta
 
-# Генерація випадкових назв товарів та категорій
-products = [
-    ("Laptop", "Electronics"), ("Smartphone", "Electronics"), ("Headphones", "Electronics"),
-    ("Sneakers", "Footwear"), ("Jeans", "Clothing"), ("T-shirt", "Clothing"),
-    ("Watch", "Accessories"), ("Backpack", "Accessories"), ("Sunglasses", "Accessories")
-]
+# Параметри генерації
+num_records = 50000
+cities = ["Kyiv", "Lviv", "Odesa", "Kharkiv", "Dnipro"]
+start_date = pd.Timestamp("2015-01-01")
+end_date = pd.Timestamp("2025-01-01")
 
+# Генерація випадкових дат
+dates = pd.date_range(start_date, end_date).to_list()
+random_dates = np.random.choice(dates, size=num_records)
 
-def generate_transactions(n):
-    data = []
-    start_date = datetime(2023, 1, 1)
+# Генерація випадкових міст
+random_cities = np.random.choice(cities, size=num_records)
 
-    for i in range(n):
-        transaction_id = f"T{i:07d}"
-        user_id = f"U{random.randint(1000, 9999)}"
-        product, category = random.choice(products)
-        price = random.uniform(10, 2000)
-        quantity = random.randint(1, 5)
-        timestamp = start_date + timedelta(minutes=random.randint(0, 525600))  # Рік у хвилинах
+# Генерація погодних показників
+temperatures = np.random.uniform(-20, 35, size=num_records)  # Від -20 до +35°C
+humidity = np.random.uniform(30, 100, size=num_records)  # Від 30% до 100%
+wind_speed = np.random.uniform(0, 20, size=num_records)  # Від 0 до 20 м/с
 
-        data.append([transaction_id, user_id, product, category, price, quantity, timestamp])
+# Створення DataFrame
+df = pd.DataFrame({
+    "date": random_dates,
+    "city": random_cities,
+    "temperature": temperatures.round(1),
+    "humidity": humidity.round(1),
+    "wind_speed": wind_speed.round(1),
+})
 
-    return data
+# Збереження в CSV
+df.to_csv("weather_data.csv", index=False)
 
-
-# Генеруємо дані
-num_records = 10 ** 6  # 1 мільйон записів
-data = generate_transactions(num_records)
-
-df = pd.DataFrame(data, columns=["transaction_id", "user_id", "product", "category", "price", "quantity", "timestamp"])
-
-# Зберігаємо в CSV файл
-df.to_csv("transactions_dataset.csv", index=False)
+print("Генерація завершена! Файл weather_data.csv збережено.")
